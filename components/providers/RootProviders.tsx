@@ -11,7 +11,6 @@ function RootProviders({ children }: { children: React.ReactNode }) {
       disableTransitionOnChange
       >
       {children}
-
     </ThemeProvider>
   )
 }
