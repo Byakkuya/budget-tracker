@@ -18,12 +18,15 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { CreateCategory } from '../_actions/categories'
 import { toast } from 'sonner'
 import { Category } from '@prisma/client'
+import { useTheme } from 'next-themes'
 
 interface Props {
-    type: TransactionTYPE
+    type: TransactionTYPE,
+    succesCallback: (category: Category) => void
 }
-function CreateCategoryDialog({ type }: Props) {
+function CreateCategoryDialog({ type, succesCallback }: Props) {
 
+    const theme = useTheme()
     const [open, setOpen] = React.useState(false)
     const form = useForm<CreateCategorySchemaType>({
         resolver: zodResolver(CreateCategorySchema),
@@ -43,7 +46,10 @@ function CreateCategoryDialog({ type }: Props) {
 
           toast.success(`Category ${data.name} created successfully ✅`, {
             id: "create-category",
+
           });
+
+          succesCallback(data);
           await queryClient.invalidateQueries({ queryKey: ["categories"] });
           setOpen(false);
         },
@@ -91,10 +97,10 @@ function CreateCategoryDialog({ type }: Props) {
                 <FormItem>
                   <FormLabel>Name</FormLabel>
                   <FormControl>
-                    <Input defaultValue={""}{...field} />
+                    <Input defaultValue={"category"}{...field} />
                   </FormControl>
                   <FormDescription>
-                    Add a name for your category
+                    This is how your category will appear in the app 
                   </FormDescription>
                 </FormItem>
               )}
@@ -128,7 +134,7 @@ function CreateCategoryDialog({ type }: Props) {
                         </Button>
                     </PopoverTrigger>
                     <PopoverContent className="w-full">
-                        <Picker data={data} onEmojiSelect={(emoji: {native:string}) => {
+                        <Picker data={data} theme={theme.resolvedTheme} onEmojiSelect={(emoji: {native:string}) => {
                             field.onChange(emoji.native)
                         }} />
                     </PopoverContent>
