@@ -1,9 +1,11 @@
 "use client"
 
 import { DateRangePicker } from '@/components/ui/date-range-picker';
+import { MAX_DATE_RANGE_DAYS } from '@/lib/constants';
 import { UserSettings } from '@prisma/client'
-import { startOfMonth } from 'date-fns';
+import { differenceInDays, startOfMonth } from 'date-fns';
 import React, { useState } from 'react'
+import { toast } from 'sonner';
 
 function Overview({userSettings}:{userSettings:UserSettings}) {
     const [dateRange, setDateRange] = useState<{ from: Date; to: Date }>({
@@ -24,7 +26,12 @@ function Overview({userSettings}:{userSettings:UserSettings}) {
                         const {from,to} = values.range;
                     // we update the date range only if both from and to are set
                         if (!from || !to) return;
-
+                        if (differenceInDays(to,from) > MAX_DATE_RANGE_DAYS) {
+                            toast.error(`The selected date range in too big. Please select a date range up to ${MAX_DATE_RANGE_DAYS} days.`);
+                            return;
+                            
+                        }
+                        setDateRange({from, to});
                     }}
                 />
             </div>
