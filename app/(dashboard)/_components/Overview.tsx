@@ -7,6 +7,7 @@ import { differenceInDays, startOfMonth } from 'date-fns';
 import React, { useState } from 'react'
 import { toast } from 'sonner';
 import StatsCards from './StatsCards';
+import CategoriesStats from './CategoriesStats';
 
 function Overview({userSettings}:{userSettings:UserSettings}) {
     const [dateRange, setDateRange] = useState<{ from: Date; to: Date }>({
@@ -29,8 +30,7 @@ function Overview({userSettings}:{userSettings:UserSettings}) {
                         if (!from || !to) return;
                         if (differenceInDays(to,from) > MAX_DATE_RANGE_DAYS) {
                             toast.error(`The selected date range in too big. Please select a date range up to ${MAX_DATE_RANGE_DAYS} days.`);
-                            return;
-                            
+                            return;    
                         }
                         setDateRange({from, to});
                     }}
@@ -42,6 +42,11 @@ function Overview({userSettings}:{userSettings:UserSettings}) {
             userSettings={userSettings}
             from={dateRange.from}
             to={dateRange.to} />
+
+            <CategoriesStats
+                userSettings={userSettings}
+                from={dateRange.from}
+                to={dateRange.to} />
         </div>
         </>
   )
