@@ -1,6 +1,6 @@
 "use client"
 
-import {  getCategoriesStatesResponseType } from '@/app/api/stats/balance/categories/route';
+import {  getCategoriesStatesResponseType } from '@/app/api/stats/categories/route';
 import { GetBalanceStatsResponseType } from '@/app/api/stats/balance/route';
 import SkeletonWrapper from '@/components/SkeletonWrapper';
 import { Card, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,6 +10,7 @@ import { TransactionTYPE } from '@/lib/types';
 import { UserSettings } from '@prisma/client';
 import { useQuery } from '@tanstack/react-query';
 import React, { useMemo } from 'react'
+import { Progress } from '@/components/ui/progress';
 
 
 
@@ -33,7 +34,7 @@ function CategoriesStats({from,to,userSettings}:Props) {
   const income = statsQuery.data?.income || 0;
   const expense = statsQuery.data?.expense || 0;
   const total = income - expense;
- 
+
   return (
     <div className='flex w-full flex-warp gap-2 md:flex-nowrap'>
 
@@ -79,7 +80,7 @@ function CategoriesCard({
           <Card className="w-full h-80">
             <CardHeader>
               <CardTitle className='grid frid-flow-row justify-between gap-2 text-muted-foreground md:grid-flow-col'>
-
+              {type === 'income' ? 'Income Categories' : 'Expense Categories'}
               </CardTitle>
             </CardHeader>
             <div className="flex items-center justify-between gap-2">
@@ -94,8 +95,28 @@ function CategoriesCard({
               {filteredData.length > 0 && (
                 <ScrollArea className='h-60 w-full px-4'>
                   <div className="flex w-full flex-col gap-4 p-4">
-                    
-                  
+                    {filteredData.map((item) => {
+                      const amount = item._sum.amount || 0;
+                      const percentage = (amount *100 ) / (total ||amount);
+
+                      return (
+                        <div key={item.category} className='flex flex-col gap-2'>
+                          <div className="flex items-center justify-between">
+                          <span className="flex items-centert text-gray-400">
+                            {item.categoryIcon} {item.category}
+                            <span className="ml-2 text-xs text-muted-foreground">
+                              ({percentage.toFixed(0)}%)
+                            </span>
+                          </span>
+                          <span className="text-sm text-gray-400">
+                            {formatter.format(amount)}
+                          </span>
+                          </div>
+                          <Progress value={percentage} />
+                        </div>
+                      )
+                      
+                    })} 
                   </div>
                 </ScrollArea>
               )}
