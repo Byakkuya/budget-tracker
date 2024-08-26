@@ -1,6 +1,7 @@
 import prisma from "@/lib/prisma";
 import { Period, TimeFrame } from "@/lib/types";
 import { currentUser } from "@clerk/nextjs/server";
+import { getDaysInMonth } from "date-fns";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 
@@ -32,7 +33,7 @@ export async function GET(request: Request) {
             year: queryParams.data.year
         
         })
-
+        return Response.json(data);
 }
 
 export type GetHistoryDataResponseType = Awaited< ReturnType<typeof getHistoryData>>
@@ -42,7 +43,7 @@ async function getHistoryData(userId: string, timeframe: TimeFrame, period: Peri
         case "year":
             return getYearHistoryData(userId, period.year);
         case "month":
-            return getMonthHistoryData(userId, period.month);
+            return getMonthHistoryData(userId, period.year, period.month);
     }
 }
 
@@ -92,3 +93,51 @@ async function getYearHistoryData(userId: string, year: number) {
         
     }
     return history;
+
+}
+
+
+async function getMonthHistoryData(userId: string,year: number, month: number) {
+    const result = await prisma.monthHistory.groupBy({
+        by: ["day"],
+        where: {
+            userId,
+            year,
+            month
+        },
+        _sum: {
+            income: true,
+            expense: true,
+        },
+        orderBy: [
+            {
+                day: "asc",
+            },
+        ],
+        
+    });
+    if(!result || result.length === 0) return [];
+    const history: HistoryData[] = [];
+    const daysInMonth = getDaysInMonth(new Date(year, month));
+    for (let i = 1; i <= 31; i++) {
+        let expense = 0;
+        let income = 0;
+        const day = result.find((row)=> row.day === i);
+        if (day) {
+            expense = day._sum.expense || 0;
+            income = day._sum.income || 0;
+        }
+
+        history.push({
+            expense,
+            income,
+            year,
+            month,
+            day: i
+        });
+        return history;
+        
+    }
+
+
+}
