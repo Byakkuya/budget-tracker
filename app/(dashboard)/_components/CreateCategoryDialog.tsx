@@ -10,7 +10,7 @@ import { CreateCategorySchema, CreateCategorySchemaType } from '@/schema/categor
 import { zodResolver } from '@hookform/resolvers/zod'
 import { DialogTitle } from '@radix-ui/react-dialog'
 import { CircleOff, Loader2, PlusSquare } from 'lucide-react'
-import React, { useCallback } from 'react'
+import React, { ReactNode, useCallback } from 'react'
 import { useForm } from 'react-hook-form'
 import Picker from "@emoji-mart/react"
 import data from "@emoji-mart/data"
@@ -21,10 +21,12 @@ import { Category } from '@prisma/client'
 import { useTheme } from 'next-themes'
 
 interface Props {
-    type: TransactionTYPE,
-    succesCallback: (category: Category) => void
+    type: TransactionTYPE;
+    succesCallback: (category: Category) => void;
+    trigger?: ReactNode;
+
 }
-function CreateCategoryDialog({ type, succesCallback }: Props) {
+function CreateCategoryDialog({ type, succesCallback, trigger }: Props) {
 
     const theme = useTheme()
     const [open, setOpen] = React.useState(false)
@@ -72,11 +74,11 @@ function CreateCategoryDialog({ type, succesCallback }: Props) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-            <Button variant="ghost" className="flex border-seperate items-center justify-start roudned-none border-b px-3 py-3 text-muted-foreground">
+            {trigger? trigger : <Button variant="ghost" className="flex border-seperate items-center justify-start roudned-none border-b px-3 py-3 text-muted-foreground">
         
-                <PlusSquare className='mr-2 h-4 w-4'/>
-                Create Category
-            </Button>
+        <PlusSquare className='mr-2 h-4 w-4'/>
+        Create Category
+    </Button>}
         </DialogTrigger>
         <DialogContent>
             <DialogHeader>
