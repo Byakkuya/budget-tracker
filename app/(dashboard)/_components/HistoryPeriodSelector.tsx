@@ -23,6 +23,7 @@ function HistoryPeriodSelector( {period, setPeriod, timeframe, setTimeframe}: Pr
     })
   return (
     <div className='flex flex-warp items'>
+
       <SkeletonWrapper  fullwidth={false} isLoading={historyPeriods.isFetching}>
           <Tabs value={timeframe} 
           onValueChange={(value)=> setTimeframe(value as TimeFrame)}>
@@ -32,6 +33,7 @@ function HistoryPeriodSelector( {period, setPeriod, timeframe, setTimeframe}: Pr
             </TabsList>
           </Tabs>
       </SkeletonWrapper>
+      
       <div className="flex flex-warp items-center gap-2	">
         <SkeletonWrapper isLoading={historyPeriods.isFetching} fullwidth={false}>
           <YearSelector
