@@ -308,34 +308,39 @@ function TransactionsTable({ from, to }: Props) {
 
 export default TransactionsTable;
 
-function RowActions ({transaction}: {transaction:TransactionHistoryRow}) {
+function RowActions({ transaction }: { transaction: TransactionHistoryRow }) {
+  const [showDeleteDialog, setShowDialog] = useState(false);
 
-  const [showDeleteDialog,setShowDialog] = useState(false);
-  if (showDeleteDialog) {
-    console.log(showDeleteDialog)
-  }
   return (
     <>
-    <DeleteTransationDialog open={showDeleteDialog} setOpen={setShowDialog} transactionId={transaction.id} />
-    
-    <DropdownMenu>
-      <DropdownMenuTrigger>
-        <Button variant={"ghost"} className='h-8 w-8 p-0'>
-          <span className='sr-only'>Open menu</span>
-          <MoreHorizontal className='h-4 w-4'/>
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align='end'>
-    <DropdownMenuLabel> Actions</DropdownMenuLabel>
-    <DropdownMenuSeparator />
-    <DropdownMenuItem className="flex items-center gap-2"
-    onSelect={() => setShowDialog(prev => !prev)}>
-      <TrashIcon className='h-4 w-4 text-muted-foreground' />
-      Delete
-    </DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
+      <DeleteTransationDialog
+        open={showDeleteDialog}
+        setOpen={setShowDialog}
+        transactionId={transaction.id}
+      />
+      <DropdownMenu>
+        <DropdownMenuTrigger>
+          <Button variant={"ghost"} className="h-8 w-8 p-0">
+            <span className="sr-only">Open menu</span>
+            <MoreHorizontal className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem
+            className="flex items-center gap-2"
+            onSelect={() => {
+              console.log("Delete selected");
+              setShowDialog((prev) => !prev);
+              console.log("Dialog state:", !showDeleteDialog);
+            }}
+          >
+            <TrashIcon className="h-4 w-4 text-muted-foreground" />
+            Delete
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     </>
-  )
-
+  );
 }
